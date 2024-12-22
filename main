@@ -1,50 +1,157 @@
-local library = loadstring(game:HttpGet("https://raw.githubusercontent.com/bloodball/-back-ups-for-libs/main/Splix"))()
+local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
-local window = library:new({textsize = 13.5,font = Enum.Font.RobotoMono,name = "DexScript - v1",color = Color3.fromRGB(225,58,81)})
+local Window = Rayfield:CreateWindow({
+   Name = "Rayfield Example Window",
+   Icon = 0, -- Icon in Topbar. Can use Lucide Icons (string) or Roblox Image (number). 0 to use no icon (default).
+   LoadingTitle = "Rayfield Interface Suite",
+   LoadingSubtitle = "by Sirius",
+   Theme = "Default", -- Check https://docs.sirius.menu/rayfield/configuration/themes
 
-local tab = window:page({name = "YES2"})
+   DisableRayfieldPrompts = false,
+   DisableBuildWarnings = false, -- Prevents Rayfield from warning when the script has a version mismatch with the interface
 
-local section1 = tab:section({name = "section1",side = "left",size = 250})
+   ConfigurationSaving = {
+      Enabled = true,
+      FolderName = nil, -- Create a custom folder for your hub/game
+      FileName = "Big Hub"
+   },
 
-local multisection = tab:multisection({name = "multisection",side = "right",size = 250})
+   Discord = {
+      Enabled = false, -- Prompt the user to join your Discord server if their executor supports it
+      Invite = "noinvitelink", -- The Discord invite code, do not include discord.gg/. E.g. discord.gg/ABCD would be ABCD
+      RememberJoins = true -- Set this to false to make them join the discord every time they load it up
+   },
 
-local section2 = multisection:section({name = "section2",side = "right",size = 100})
+   KeySystem = false, -- Set this to true to use our key system
+   KeySettings = {
+      Title = "Untitled",
+      Subtitle = "Key System",
+      Note = "No method of obtaining the key is provided", -- Use this to tell the user how to get a key
+      FileName = "Key", -- It is recommended to use something unique as other scripts using Rayfield may overwrite your key file
+      SaveKey = true, -- The user's key will be saved, but if you change the key, they will be unable to use your script
+      GrabKeyFromSite = false, -- If this is true, set Key below to the RAW site you would like Rayfield to get the key from
+      Key = {"Hello"} -- List of keys that will be accepted by the system, can be RAW file links (pastebin, github etc) or simple strings ("hello","key22")
+   }
+})
 
-section1:toggle({name = "toggle",def = false,callback = function(value)
-  tog = value
-  print(tog)
-end})
+local Tab = Window:CreateTab("Tab Example", "rewind")
 
-section1:button({name = "button",callback = function()
-   print('hot ui lib')
-end})
+local Section = Tab:CreateSection("Section Example")
+local Divider = Tab:CreateDivider()
 
-section1:slider({name = "rate ui lib 1-100",def = 1, max = 100,min = 1,rounding = true,ticking = false,measuring = "",callback = function(value)
-   print(value)
-end})
+local Button = Tab:CreateButton({
+   Name = "Button Example",
+   Callback = function()
+       print("Button's action successfully executed. - Rayfield")
+   end,
+})
 
-section1:dropdown({name = "dropdown",def = "",max = 10,options = {"1","2","3","4","5","6","7","8","9","10"},callback = function(chosen)
-   print(chosen)
-end})
--- for dropdowns put max to the number of items u have in the opions
+local Toggle = Tab:CreateToggle({
+   Name = "Toggle Example",
+   CurrentValue = false,
+   Flag = "Toggle1", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
+   Callback = function(Value)
+   -- The function that takes place when the toggle is pressed
+   -- The variable (Value) is a boolean on whether the toggle is true or false
+   end,
+})
 
-section1:buttonbox({name = "buttonbox",def = "",max = 4, options = {"yoyoyo","yo2","yo3","yo4"},callback = function(value)
-   print(value)
-end})
+local ColorPicker = Tab:CreateColorPicker({
+    Name = "Color Picker",
+    Color = Color3.fromRGB(255,255,255),
+    Flag = "ColorPicker1", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
+    Callback = function(Value)
+        -- The function that takes place every time the color picker is moved/changed
+        -- The variable (Value) is a Color3fromRGB value based on which color is selected
+    end
+})
 
+local Slider = Tab:CreateSlider({
+   Name = "Slider Example",
+   Range = {0, 10000},
+   Increment = 10,
+   Suffix = "studs",
+   CurrentValue = 10,
+   Flag = "Slider1", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
+   Callback = function(Value)
+       local character = game.Players.LocalPlayer.Character or game.Players.LocalPlayer.CharacterAdded:Wait()
+        
+       local humanoid = character:FindFirstChildOfClass("Humanoid")
+        if humanoid then
+            humanoid.WalkSpeed = Value -- Set the WalkSpeed to slider value
+        else
+            print("Humanoid not found!")
+        end
+    end,    
+})
 
-section1:multibox({name = "multibox",def = {}, max = 4,options = {"1","2","3","4"},callback = function(value)
-   print(value)
-end})
+local Divider = Tab:CreateDivider()
 
-section1:textbox({name = "textbox",def = "default text",placeholder = "Enter WalkSpeed",callback = function(value)
-   print(value)
-end})
+local Toggle = Tab:CreateToggle({
+    Name = "ESP",
+    CurrentValue = false,
+    Flag = "Esp1",
+    Callback = function(Value)
+        -- Check the toggle value
+        if Value then
+            -- Enable ESP
+            for _, player in pairs(game.Players:GetPlayers()) do
+                if player ~= game.Players.LocalPlayer then
+                    local character = player.Character or player.CharacterAdded:Wait()
+                    local humanoid = character:FindFirstChild("Humanoid")
+                    local torso = character:FindFirstChild("UpperTorso") or character:FindFirstChild("Torso")
 
-section1:keybind({name = "set ui keybind",def = nil,callback = function(key)
-   window.key = key
-end})
+                    if humanoid and torso then
+                        -- Create ESP effect
+                        local highlight = Instance.new("Highlight")
+                        highlight.Name = "PlayerESP" -- Unique name
+                        highlight.Adornee = character
+                        highlight.FillColor = Color3.fromRGB(255, 255, 255) -- White humanoid
+                        highlight.OutlineColor = Color3.fromRGB(0, 0, 0) -- Black outline
+                        highlight.Parent = character
 
-local picker = section1:colorpicker({name = "color",cpname = nil,def = Color3.fromRGB(255,255,255),callback = function(value)
-   color = value
-end})
+                        -- Add name above torso
+                        local billboardGui = Instance.new("BillboardGui")
+                        billboardGui.Name = "NameDisplay"
+                        billboardGui.Adornee = torso
+                        billboardGui.Size = UDim2.new(0, 200, 0, 50)
+                        billboardGui.StudsOffset = Vector3.new(0, 2, 0) -- Position above torso
+                        billboardGui.Parent = torso
+
+                        local textLabel = Instance.new("TextLabel")
+                        textLabel.Text = player.Name
+                        textLabel.Size = UDim2.new(1, 0, 1, 0)
+                        textLabel.BackgroundTransparency = 1
+                        textLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+                        textLabel.TextStrokeColor3 = Color3.fromRGB(0, 0, 0)
+                        textLabel.TextStrokeTransparency = 0
+                        textLabel.Font = Enum.Font.SourceSansBold
+                        textLabel.TextScaled = true
+                        textLabel.Parent = billboardGui
+                    end
+                end
+            end
+        else
+            -- Disable ESP
+            for _, player in pairs(game.Players:GetPlayers()) do
+                local character = player.Character
+                if character then
+                    -- Remove ESP effect
+                    local highlight = character:FindFirstChild("PlayerESP")
+                    if highlight then
+                        highlight:Destroy()
+                    end
+
+                    -- Remove name display
+                    local torso = character:FindFirstChild("UpperTorso") or character:FindFirstChild("Torso")
+                    if torso then
+                        local nameDisplay = torso:FindFirstChild("NameDisplay")
+                        if nameDisplay then
+                            nameDisplay:Destroy()
+                        end
+                    end
+                end
+            end
+        end
+    end,
+})
